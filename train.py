@@ -12,6 +12,7 @@ from tensorflow.contrib import learn
 # Parameters
 # ==================================================
 
+#tf.flags this is easier for manipulating variables in cmd
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
@@ -55,6 +56,7 @@ def preprocess():
     x = np.array(list(vocab_processor.fit_transform(x_text)))
 
     # Randomly shuffle data
+    # np.random.permutation is another way to shuffle list/aranges
     np.random.seed(10)
     shuffle_indices = np.random.permutation(np.arange(len(y)))
     x_shuffled = x[shuffle_indices]
@@ -66,6 +68,8 @@ def preprocess():
     x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
     y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 
+     
+    # delete the value of the variable
     del x, y, x_shuffled, y_shuffled
 
     print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
