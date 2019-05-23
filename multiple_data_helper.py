@@ -34,7 +34,7 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     print(load_data_and_labels.__code__.co_varnames)
     
     for i in arrange(load_data_and_labels.__code__.co_argcount):
-        
+       load_data_and_labels.__code__.co_varnames[i]
     
     # Load data from files
     positive_examples = list(open(positive_data_file, "r", encoding='utf-8').readlines())
