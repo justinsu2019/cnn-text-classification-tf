@@ -28,6 +28,14 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
+    
+    #get the length of input variables， names of variables too.
+    print(load_data_and_labels.__code__.co_argcount)
+    print(load_data_and_labels.__code__.co_varnames)
+    
+    for i in arrange(load_data_and_labels.__code__.co_argcount):
+        
+    
     # Load data from files
     positive_examples = list(open(positive_data_file, "r", encoding='utf-8').readlines())
     positive_examples = [s.strip() for s in positive_examples]
