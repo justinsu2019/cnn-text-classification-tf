@@ -12,7 +12,6 @@ from tensorflow.contrib import learn
 # Parameters
 # ==================================================
 
-#tf.flags this is easier for manipulating variables in cmd
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
@@ -42,6 +41,7 @@ FLAGS = tf.flags.FLAGS
 #     print("{}={}".format(attr.upper(), value))
 # print("")
 
+
 def preprocess():
     # Data Preparation
     # ==================================================
@@ -56,7 +56,6 @@ def preprocess():
     x = np.array(list(vocab_processor.fit_transform(x_text)))
 
     # Randomly shuffle data
-    # np.random.permutation is another way to shuffle list/aranges
     np.random.seed(10)
     shuffle_indices = np.random.permutation(np.arange(len(y)))
     x_shuffled = x[shuffle_indices]
@@ -68,13 +67,12 @@ def preprocess():
     x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
     y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 
-     
-    # delete the value of the variable
     del x, y, x_shuffled, y_shuffled
 
     print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
     print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
     return x_train, y_train, vocab_processor, x_dev, y_dev
+
 
 def train(x_train, y_train, vocab_processor, x_dev, y_dev):
     # Training
@@ -112,8 +110,9 @@ def train(x_train, y_train, vocab_processor, x_dev, y_dev):
             grad_summaries_merged = tf.summary.merge(grad_summaries)
 
             # Output directory for models and summaries
-            timestamp = str(int(time.time()))
-            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+            #timestamp = str(int(time.time()))
+            #out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs"))
             print("Writing to {}\n".format(out_dir))
 
             # Summaries for loss and accuracy
@@ -132,7 +131,9 @@ def train(x_train, y_train, vocab_processor, x_dev, y_dev):
 
             # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
             checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
-            checkpoint_prefix = os.path.join(checkpoint_dir, "model")
+            checkpoint_prefix = "final"
+
+            #checkpoint_prefix = os.path.join(checkpoint_dir, "model")
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
@@ -142,6 +143,11 @@ def train(x_train, y_train, vocab_processor, x_dev, y_dev):
 
             # Initialize all variables
             sess.run(tf.global_variables_initializer())
+
+            #saver.restore(sess, checkpoint_prefix)
+            print(out_dir+"\\final-30000")
+            if os.path.exists(out_dir+"\\final-30000.index"):
+                saver.restore(sess, out_dir+"\\final-30000")
 
             def train_step(x_batch, y_batch):
                 """
@@ -190,6 +196,7 @@ def train(x_train, y_train, vocab_processor, x_dev, y_dev):
                     print("")
                 if current_step % FLAGS.checkpoint_every == 0:
                     path = saver.save(sess, checkpoint_prefix, global_step=current_step)
+                    #path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                     print("Saved model checkpoint to {}\n".format(path))
 
 def main(argv=None):
